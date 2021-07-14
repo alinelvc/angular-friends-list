@@ -1,0 +1,88 @@
+<div class="loading-init" *ngIf="loading"><app-loading></app-loading></div>
+<div class="users" *ngIf="friends">
+  <div class="user" *ngFor="let friend of friends">
+    <img src="{{ friend.img }}" />
+    <div class="info-wrapper">
+      <div class="user-name">{{ friend.name }}</div>
+
+      <div class="user-id-username">
+        {{ friend.username }}
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="button button-primary"
+      (click)="modalOpen(friend)"
+    >
+      Pagar
+    </button>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="modalValidation || modal">
+  <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+    <div class="modal" *ngIf="modal">
+      <div class="wrapper">
+        <div class="img-modal">
+          <img src="{{ userPayment.img }}" />
+        </div>
+        <div class="title">
+          Pagamento para <span> {{ userPayment.name }}</span>
+        </div>
+        <div class="close">
+          <button (click)="modalClose()">X</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <input
+          type="text"
+          #currency
+          (keyup)="getCurrency(currency.value)"
+          appCurrencyMask
+          formControlName="value"
+          placeholder="R$ 00,00"
+        />
+
+        <div class="cards">
+          <select formControlName="card" placeholder="Selecione um cartão">
+            <option [ngValue]="null" [disabled]="true">
+              Formas de pagamento
+            </option>
+
+            <option *ngFor="let card of creditCards" [ngValue]="card">
+              Cartão com final {{ getFinalCardNumber(card.card_number) }}
+            </option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          class="button"
+          [disabled]="!paymentForm.valid"
+          [ngClass]="{
+            'button-primary': paymentForm.valid,
+            'button-disabled': !paymentForm.valid
+          }"
+        >
+          Pagar
+        </button>
+      </div>
+    </div>
+  </form>
+  <app-loading *ngIf="loading"></app-loading>
+  <div class="modal" *ngIf="modalValidation && titleResponse">
+    <div class="head-modal">
+      <div class="title">{{ titleResponse }}</div>
+      <div class="close">
+        <button (click)="modalClose()">X</button>
+      </div>
+    </div>
+    <div class="content">
+      <span>
+        {{ msgResponse }}
+      </span>
+    </div>
+  </div>
+</div>
